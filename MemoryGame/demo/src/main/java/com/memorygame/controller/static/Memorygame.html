@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            opacity: 200%;
+            background-color: rgba(41, 35, 35, 0.5); /* Background color with 50% opacity */
+            background-image: url('file:///C:/Users/TheGamerTech/Downloads/memorygame.jpg');
+            background-blend-mode: darken; /* Blend mode to darken the background image */
+        }
+
+        .container {
+            text-align: center;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+            color: whitesmoke;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .level-buttons {
+            margin-bottom: 20px;
+        }
+
+        .level-button {
+            background-color: #db34c2;
+            border-color: #292323;
+            border-style: solid;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: 5px solid #70676e;
+            border-radius: 50px;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .level-button:hover {
+            background-color: #2980b9;
+        }
+
+        .game-board {
+            display: grid;
+            grid-gap: 15px;
+            background-color: #878080;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background-color: #c8db34;
+            color: #ffffff;
+            border-radius: 10px;
+            border-color: #292323;
+            border-radius: 10%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .card.green {
+            background-color: #27ae60; /* Change background color to green */
+        }
+
+        .card:hover {
+            background-color: #b92935;
+        }
+
+        #timer {
+            position: fixed;
+            top: 50px; /* Adjust as needed */
+            /*right: 30px;
+            bottom:20px;*/
+            right : 280px;
+            padding: 20px;
+            background-color: rgba(210, 223, 33, 0.8); /* Adjust as needed */
+            border: 5px solid #000; /* Adjust as needed */
+            border-color: whitesmoke;
+            border-radius: 50px; /* Adjust as needed */
+            transform: translate(50%, -50%); /* Center the box vertically */
+            color : black;
+        }
+
+        #times-up-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 20px;
+            border : 2px solid white;
+            border-color:white;
+            border-radius: 50px;
+            display: none;
+            z-index: 9999;
+        }
+
+        #reset-button {
+            background-color: #3498db;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        #reset-button:hover {
+            background-color: #2980b9;
+        }
+
+        #user-info-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(122, 191, 26, 0.7);
+            color: black;
+            border-color: yellow;
+            border: 3px solid white; /* Adjust as needed */
+            padding: 20px;
+            border-radius: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: none;
+            text-align: center;
+        }
+
+        #user-info {
+            margin-bottom: 5px;
+        }
+
+        #high-score {
+            font-size: 16px;
+        }
+
+        #username-input {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+            font-size: 16px;
+            
+        }
+
+        #start-game-button {
+            background-color: #3498db;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #start-game-button:hover {
+            background-color: #2980b9;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Memory Game</h1>
+        <div class="level-buttons">
+            <button class="level-button" onclick="startGame('easy')">Easy (4x4)</button>
+            <button class="level-button" onclick="startGame('moderate')">Moderate (6x6)</button>
+            <button class="level-button" onclick="startGame('hard')">Hard (8x8)</button>
+        </div>
+        <div class="game-board" id="game-board">
+            <!-- Cards will be dynamically added here -->
+        </div>
+        <div id="times-up-message">
+            <p>Times Up!!! Want to play again?</p>
+            <button id="reset-button" onclick="resetGame()">Reset</button>
+        </div>
+        <div id="timer">Time Left: 1:00</div>
+
+        <!-- User Info Container -->
+        <div id="user-info-container">
+            <div id="user-info"></div>
+            <div id="high-score"></div>
+        </div>
+
+        <!-- Username Input -->
+        <input type="text" id="username-input" placeholder="Enter your username">
+        <button id="start-game-button" onclick="startGameWithUsername()">Start Game</button>
+    </div>
+
+    <script>
+        let timerInterval;
+        let timeLeft = 60; // Default time for each level
+        let gridSize = 4; // Default grid size for easy level
+        let totalPairs = 8; // Default total pairs for easy level
+        let username = '';
+
+        function startGame(level) {
+            // Reset timer and grid size based on the selected level
+            if (level === 'easy') {
+                gridSize = 4;
+                totalPairs = 8;
+                timeLeft = 60;
+            } else if (level === 'moderate') {
+                gridSize = 6;
+                totalPairs = 18;
+                timeLeft = 140;
+            } else if (level === 'hard') {
+                gridSize = 8;
+                totalPairs = 32;
+                timeLeft = 240;
+            }
+            clearInterval(timerInterval); // Stop previous timer
+            startTimer(); // Start new timer
+            initializeGame();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer').textContent = ""; // Hide timer
+                    document.getElementById('times-up-message').style.display = "block"; // Show times-up message
+                    // Add any further actions you want to take when time runs out
+                } else {
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    document.getElementById('timer').textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                }
+            }, 1000);
+        }
+
+        const gameBoard = document.getElementById("game-board");
+        let firstCard = null;
+        let secondCard = null;
+        let pairsFound = 0;
+
+        function initializeGame() {
+            const cardValues = [];
+            for (let i = 0; i < totalPairs; i++) {
+                cardValues.push(i, i);
+            }
+            cardValues.sort(() => Math.random() - 0.5);
+
+            gameBoard.innerHTML = '';
+            gameBoard.style.gridTemplateColumns = `repeat(${gridSize}, 100px)`;
+            gameBoard.style.gridTemplateRows = `repeat(${gridSize}, 100px)`;
+            for (let i = 0; i < totalPairs * 2; i++) {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.addEventListener("click", () => handleCardClick(card, i, cardValues[i]));
+                gameBoard.appendChild(card);
+            }
+        }
+
+        function handleCardClick(card, index, value) {
+    if (!card.textContent && !secondCard) {
+        card.textContent = value;
+        if (!firstCard) {
+            firstCard = card;
+        } else {
+            secondCard = card;
+            if (firstCard.textContent === secondCard.textContent) {
+                firstCard.classList.add("green");
+                secondCard.classList.add("green");
+                pairsFound++;
+                if (pairsFound === totalPairs) {
+                    clearInterval(timerInterval); // Stop timer when game is won
+                    const finalTime = 60 - timeLeft;
+                    const highScore = localStorage.getItem('highScore');
+                    if (!highScore || finalTime < highScore) {
+                        localStorage.setItem('highScore', finalTime);
+                        document.getElementById('high-score').textContent = `High Score: ${finalTime}s`;
+                    }
+                    updateHighScoreDisplay(finalTime); // Update high score display
+                    alert("Congratulations! You've won!");
+                    // Reset the game if desired
+                }
+                firstCard = null;
+                secondCard = null;
+            } else {
+                setTimeout(() => {
+                    firstCard.textContent = "";
+                    secondCard.textContent = "";
+                    firstCard = null;
+                    secondCard = null;
+                }, 1000);
+            }
+        }
+    }
+}
+
+function updateHighScoreDisplay(finalTime) {
+    document.getElementById('high-score').textContent = `High Score: ${finalTime}s`;
+}
+
+
+        function resetGame() {
+            document.getElementById('times-up-message').style.display = "none"; // Hide times-up message
+            startGame('easy'); // Reset the game to the easy level
+        }
+
+        // Start the game with the entered username
+        function startGameWithUsername() {
+    const enteredUsername = document.getElementById('username-input').value;
+    if (enteredUsername) {
+        username = enteredUsername;
+        fetch('/api/scores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username, level: 'easy', score: 0 }),
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('user-info').textContent = `Player: ${username}`;
+                document.getElementById('user-info-container').style.display = "block";
+                document.getElementById('username-input').style.display = "none";
+                document.getElementById('start-game-button').style.display = "none";
+                document.getElementById('start-game-text').textContent = `Hello ${username}! Get ready to play the memory game.`;
+                document.getElementById('start-game-message').style.display = "flex";
+                setTimeout(() => {
+                    document.getElementById('start-game-message').style.display = "none"; // Hide after 2 seconds
+                }, 2000);
+            } else {
+                throw new Error('Failed to save score');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to save score. Please try again.");
+        });
+    } else {
+        alert("Please enter a username!");
+    }
+}
+
+
+    </script>
+</body>
+</html>
